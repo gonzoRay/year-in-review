@@ -42,7 +42,11 @@
 </template>
 
 <script>
-import AppName from "./components/AppName";
+import AppName from "@/components/AppName";
+import firebase from "firebase/app";
+import { firestoreDb } from "@/firebase";
+import { mutations } from "vuex";
+
 export default {
   name: "App",
   components: {
@@ -62,7 +66,25 @@ export default {
     footer: {
       inset: false
     }
-  })
+  }),
+
+  created() {
+    const onError = src => error =>
+      console.log(`Firebase onSnapshot failed: ${error} src: ${src}`);
+
+    const entriesCollection = firestoreDb.collection("entries");
+
+    // Subscribe to changes in Firestore collections in Firebase
+    entriesCollection.onSnapshot(entriesRef => {
+      this.$store.commit("startLoading");
+      this.$store.commit("clearEntries");
+      entriesRef.forEach(doc => {
+        console.log("entry added: %o", doc.data());
+        this.$store.commit("addEntry", doc.data());
+      });
+      this.$store.commit("stopLoading");
+    }, onError("entries"));
+  }
 };
 </script>
 <style>
