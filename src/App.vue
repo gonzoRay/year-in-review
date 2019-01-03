@@ -17,7 +17,9 @@
         @click.stop="primaryDrawer.model = !primaryDrawer.model"
       ></v-toolbar-side-icon>
       <v-toolbar-title>
-        <AppName/>
+        <span @click="gotoHome">
+          <AppName/>
+        </span>
       </v-toolbar-title>
     </v-toolbar>
     <v-content>
@@ -33,7 +35,7 @@
         <AppName/>
       </span>
       <v-fab-transition>
-        <v-btn color="cyan lighten-2" key="add" v-model="showFab" dark fab fixed bottom right>
+        <v-btn color="cyan" v-show="showFab()" @click="gotoCreate" fab fixed bottom right>
           <v-icon>add</v-icon>
         </v-btn>
       </v-fab-transition>
@@ -42,7 +44,10 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from "vuex";
 import AppName from "@/components/AppName";
+import CreateEvent from "@/components/CreateEvent";
+
 import firebase from "firebase/app";
 import { firestoreDb } from "@/firebase";
 import { mutations } from "vuex";
@@ -50,10 +55,10 @@ import { mutations } from "vuex";
 export default {
   name: "App",
   components: {
-    AppName
+    AppName,
+    CreateEvent
   },
   data: () => ({
-    showFab: false,
     dark: true,
     drawers: ["Default (no property)", "Permanent", "Temporary"],
     primaryDrawer: {
@@ -67,7 +72,6 @@ export default {
       inset: false
     }
   }),
-
   created() {
     const onError = src => error =>
       console.log(`Firebase onSnapshot failed: ${error} src: ${src}`);
@@ -79,16 +83,24 @@ export default {
       this.$store.commit("startLoading");
       this.$store.commit("clearEntries");
       entriesRef.forEach(doc => {
-        console.log("entry added: %o", doc.data());
+        // console.log("entry added: %o", doc.data());
         this.$store.commit("addEntry", doc.data());
       });
       this.$store.commit("stopLoading");
     }, onError("entries"));
+  },
+  methods: {
+    gotoHome() {
+      this.$router.push("/");
+    },
+    gotoCreate() {
+      this.$router.push("/create");
+    },
+    showFab() {
+      return this.$router.currentRoute.path.indexOf("create") === -1;
+    }
   }
 };
 </script>
 <style>
-.v-btn--floating {
-  position: relative;
-}
 </style>

@@ -1,5 +1,5 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 
 Vue.use(Vuex);
 
@@ -9,6 +9,7 @@ export default new Vuex.Store({
     entries: []
   },
   getters: {
+    isCreating: state => state.isCreating,
     allEntries: state => state.entries
   },
   mutations: {
@@ -19,5 +20,9 @@ export default new Vuex.Store({
     startLoading: state => (state.isLoading = true),
     stopLoading: state => (state.isLoading = false)
   },
-  actions: {}
+  actions: {
+    createEvent(context, payload) {
+      context.commit("addEntry", payload);
+    }
+  }
 });
