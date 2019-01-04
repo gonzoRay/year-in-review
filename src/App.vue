@@ -10,7 +10,22 @@
       absolute
       overflow
       app
-    ></v-navigation-drawer>
+    >
+      <v-list>
+        <v-list-tile to="/">
+          <v-list-tile-action>
+            <v-icon>home</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title>Timeline</v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile to="/create">
+          <v-list-tile-action>
+            <v-icon>add</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title>New Event</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
     <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
       <v-toolbar-side-icon
         v-if="primaryDrawer.type !== 'permanent'"
@@ -76,7 +91,9 @@ export default {
     const onError = src => error =>
       console.log(`Firebase onSnapshot failed: ${error} src: ${src}`);
 
-    const entriesCollection = firestoreDb.collection("entries");
+    const entriesCollection = firestoreDb
+      .collection("entries")
+      .orderBy("datetime");
 
     // Subscribe to changes in Firestore collections in Firebase
     entriesCollection.onSnapshot(entriesRef => {
@@ -97,7 +114,10 @@ export default {
       this.$router.push("/create");
     },
     showFab() {
-      return this.$router.currentRoute.path.indexOf("create") === -1;
+      return (
+        this.$router.currentRoute.path.indexOf("create") === -1 &&
+        this.$router.currentRoute.path.indexOf("review") === -1
+      );
     }
   }
 };
