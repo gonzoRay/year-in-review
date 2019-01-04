@@ -42,7 +42,7 @@
       <v-stepper-content step="2">
         <v-layout column justify-space-between>
           <v-flex xs1 d-flex>
-            <div class="headline title-input">What month was this?</div>
+            <div class="headline title-input">When was this?</div>
           </v-flex>
           <v-flex xs1 md12 d-flex>
             <v-menu
@@ -136,7 +136,7 @@ export default {
       currentStep: 1,
       dateMenu: false,
       datePickerMin: "2018-01-01",
-      datePickerMax: "2018-12-01"
+      datePickerMax: "2018-12-31"
     };
   },
   watch: {
