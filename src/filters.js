@@ -1,5 +1,5 @@
-import format from 'date-fns/format';
-import Vue from 'vue';
+import format from "date-fns/format";
+import Vue from "vue";
 
 const fromFirebaseTimestamp = value => {
   if (value) {
@@ -9,9 +9,11 @@ const fromFirebaseTimestamp = value => {
 
 const formatDate = (value, isMobile) => {
   if (value) {
-    return isMobile ? format(value, 'MMM Do') : format(value, 'MMMM Do');
+    return isMobile
+      ? format(value, "MMM Do, YYYY")
+      : format(value, "MMMM Do, YYYY");
   }
 };
 
-Vue.filter('fromFirebaseTimestamp', fromFirebaseTimestamp);
-Vue.filter('formatDate', formatDate);
+Vue.filter("fromFirebaseTimestamp", fromFirebaseTimestamp);
+Vue.filter("formatDate", formatDate);

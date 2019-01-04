@@ -15,6 +15,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import format from "date-fns/format";
 
 export default {
   name: "Timeline",
@@ -23,14 +24,20 @@ export default {
   },
   methods: {
     getNextColor: currentIndex => {
-      console.log("currentIndex: ", currentIndex);
-      const colors = ["cyan", "green", "pink", "amber", "orange"];
+      const colors = ["cyan", "amber", "green", "pink", "orange"];
       if (currentIndex < colors.length) {
         return colors[currentIndex];
       }
 
       const artificialIndex = Math.abs(colors.length - currentIndex);
       return colors[artificialIndex];
+    }
+  },
+  filters: {
+    formatDate(value, isMobile) {
+      if (value) {
+        return isMobile ? format(value, "MMM Do") : format(value, "MMMM Do");
+      }
     }
   }
 };
