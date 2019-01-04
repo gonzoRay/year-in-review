@@ -25,6 +25,12 @@ export default new Router({
       name: "create",
       component: () =>
         import(/* webpackChunkName: "create" */ "./views/Create.vue")
+    },
+    {
+      path: "/review",
+      name: "review",
+      component: () =>
+        import(/* webpackChunkName: "review" */ "./views/Review.vue")
     }
   ]
 });
