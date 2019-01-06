@@ -38,22 +38,26 @@ export default {
     async signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       const userData = {
+        uid: "",
         displayName: "",
         email: "",
-        photoURL: ""
+        photoURL: "",
+        events: []
       };
 
       try {
-        const authData = await firebase.auth().signInWithPopup(provider);
-        console.log(authData);
+        const authenticatedUser = await firebase
+          .auth()
+          .signInWithPopup(provider);
 
-        userData.displayName = authData.user.displayName;
-        userData.email = authData.user.email;
-        userData.photoURL = authData.user.photoURL;
+        userData.uid = authenticatedUser.user.uid;
+        userData.displayName = authenticatedUser.user.displayName;
+        userData.email = authenticatedUser.user.email;
+        userData.photoURL = authenticatedUser.user.photoURL;
 
         await firestoreDb
           .collection("users")
-          .doc(authData.user.uid)
+          .doc(userData.uid)
           .set(userData);
 
         this.$router.replace("/");

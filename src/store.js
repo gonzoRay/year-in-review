@@ -27,7 +27,8 @@ export default new Vuex.Store({
   },
   mutations: {
     toggleDarkTheme: state => (state.useDarkTheme = !state.useDarkTheme),
-    setUserData: (state, payload) => (state.currentUser = payload),
+    setUserData: (state, payload) =>
+      (state.currentUser = { ...state.currentUser, ...payload }),
     addEntry: (state, payload) => state.entries.push(payload),
     updateEntry: (state, payload) => {
       payload.datetime = new Date(payload.datetime);
@@ -38,8 +39,12 @@ export default new Vuex.Store({
     stopLoading: state => (state.isLoading = false)
   },
   actions: {
-    createEvent(context, payload) {
-      return firestoreDb.collection("entries").add(payload);
+    createEvent({ getters }, payload) {
+      return firestoreDb
+        .collection("users")
+        .doc(getters.currentUser.uid)
+        .collection("events")
+        .add(payload);
     },
     logout({ commit }) {
       commit("setUserData", null);

@@ -172,24 +172,29 @@ export default {
     getUserPhotoUrl() {
       return this.currentUser ? this.currentUser.photoURL : "";
     },
-    subscribeToSnapshot() {
-      const onError = src => error =>
-        console.log(`Firebase onSnapshot failed: ${error} src: ${src}`);
+    async subscribeToUserEventData(uid) {
+      if (!uid) {
+        throw new Error("uid is empty");
+      }
 
-      const entriesCollection = firestoreDb
-        .collection("entries")
+      const onError = src => error =>
+        console.error(`Firebase onSnapshot failed: ${error} src: ${src}`);
+
+      const eventsCollection = await firestoreDb
+        .collection("users")
+        .doc(uid)
+        .collection("events")
         .orderBy("datetime");
 
       // Subscribe to changes in Firestore collections in Firebase
-      entriesCollection.onSnapshot(entriesRef => {
+      eventsCollection.onSnapshot(entriesRef => {
         this.$store.commit("startLoading");
         this.$store.commit("clearEntries");
         entriesRef.forEach(doc => {
-          // console.log("entry added: %o", doc.data());
           this.$store.commit("addEntry", doc.data());
         });
         this.$store.commit("stopLoading");
-      }, onError("entries"));
+      }, onError(`event data for ${this.currentUser.email}`));
     },
     async logout() {
       try {
@@ -223,7 +228,7 @@ export default {
         if (result.exists) {
           const userData = result.data();
           this.$store.commit("setUserData", userData);
-          this.subscribeToSnapshot();
+          this.subscribeToUserEventData(uid);
         }
       } else {
         // We have no user data, clear the store
