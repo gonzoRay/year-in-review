@@ -25,6 +25,13 @@
           </v-list-tile-action>
           <v-list-tile-title>New Event</v-list-tile-title>
         </v-list-tile>
+        <v-list-tile to="/about">
+          <v-list-tile-action>
+            <v-icon>info</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title>About the app</v-list-tile-title>
+        </v-list-tile>
+        <v-divider></v-divider>
         <v-list-tile class="clickable" @click="logout">
           <v-list-tile-action>
             <v-icon>exit_to_app</v-icon>
@@ -35,7 +42,7 @@
     </v-navigation-drawer>
     <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
       <v-toolbar-side-icon
-        v-if="primaryDrawer.type !== 'permanent' && currentUser"
+        v-if="showToolbarSideIcon()"
         @click.stop="primaryDrawer.model = !primaryDrawer.model"
       ></v-toolbar-side-icon>
       <v-toolbar-title>
@@ -119,7 +126,7 @@ export default {
     drawers: ["Default (no property)", "Permanent", "Temporary"],
     primaryDrawer: {
       model: false,
-      type: "default (no property)",
+      type: "Temporary",
       clipped: false,
       floating: false,
       mini: false
@@ -141,6 +148,9 @@ export default {
         this.$router.currentRoute.path.indexOf("login") === -1 &&
         this.$router.currentRoute.path.indexOf("review") === -1
       );
+    },
+    showToolbarSideIcon() {
+      return this.primaryDrawer.type !== "permanent" && this.currentUser;
     },
     toggleDarkMode() {
       this.$store.dispatch("toggleDarkTheme");
