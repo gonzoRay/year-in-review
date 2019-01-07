@@ -1,9 +1,8 @@
 <template>
-  <v-container justify-center>
+  <v-container>
     <v-layout column fill-height>
       <v-flex>
-        <span class="display-1">About</span>
-        <AppName class="pa-3"></AppName>
+        <AppName large class="pa-3"></AppName>
       </v-flex>
 
       <v-flex class="about-body">

@@ -17,8 +17,16 @@
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>
-          <v-list-tile-title>Timeline</v-list-tile-title>
+          <v-list-tile-title>My Story Line</v-list-tile-title>
         </v-list-tile>
+        <v-divider></v-divider>
+        <v-list-tile to="/2018">
+          <v-list-tile-action>
+            <v-icon>event</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title>2018 (coming)</v-list-tile-title>
+        </v-list-tile>
+        <v-divider></v-divider>
         <v-list-tile to="/create">
           <v-list-tile-action>
             <v-icon>add</v-icon>
@@ -52,9 +60,15 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <span v-if="currentUser" class="welcome-msg hidden-xs-only">Welcome {{ getFirstName() }}</span>
-      <v-menu v-model="userMenu" :close-on-content-click="false" :nudge-width="200" offset-x>
+      <v-menu
+        v-if="currentUser"
+        v-model="userMenu"
+        :close-on-content-click="false"
+        :nudge-width="200"
+        offset-x
+      >
         <v-btn icon large slot="activator">
-          <v-avatar v-if="currentUser">
+          <v-avatar>
             <img :src="getUserPhotoUrl()" alt="user avatar">
           </v-avatar>
         </v-btn>
@@ -109,17 +123,14 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import AppName from "@/components/AppName";
-import CreateEvent from "@/components/CreateEvent";
 
 import firebase from "firebase/app";
 import { firestoreDb } from "@/firebase";
-import { mutations } from "vuex";
 
 export default {
   name: "App",
   components: {
-    AppName,
-    CreateEvent
+    AppName
   },
   data: () => ({
     userMenu: false,
@@ -150,11 +161,11 @@ export default {
       );
     },
     showToolbarSideIcon() {
-      return this.primaryDrawer.type !== "permanent" && this.currentUser;
+      return this.primaryDrawer.type !== "permanent";
     },
     toggleDarkMode() {
       this.$store.dispatch("toggleDarkTheme");
-      // this.$store.dispatch('saveUserPrefs', { useDarkTheme: this.useDarkTheme });
+      // this.$store.dispatch('saveUserPrefs', { darkTheme: this.darkTheme });
       this.userMenu = false;
     },
     getFirstName() {
@@ -187,14 +198,18 @@ export default {
         .orderBy("datetime");
 
       // Subscribe to changes in Firestore collections in Firebase
-      eventsCollection.onSnapshot(entriesRef => {
+      eventsCollection.onSnapshot(eventsRef => {
         this.$store.commit("startLoading");
-        this.$store.commit("clearEntries");
-        entriesRef.forEach(doc => {
-          this.$store.commit("addEntry", doc.data());
+        this.$store.commit("clearEvents");
+        eventsRef.forEach(doc => {
+          let event = {
+            id: doc.id
+          };
+          event = { ...{ id: doc.id }, ...doc.data() };
+          this.$store.commit("addEvent", event);
         });
         this.$store.commit("stopLoading");
-      }, onError(`event data for ${this.currentUser.email}`));
+      }, onError(`Failed getting event data for ${this.currentUser.email}`));
     },
     async logout() {
       try {
@@ -205,19 +220,12 @@ export default {
       } finally {
         this.$router.replace("/login");
       }
-    }
-  },
-  computed: {
-    ...mapGetters(["currentUser", "darkTheme"]),
-    ...mapMutations(["setUserData", "toggleDarkTheme"])
-  },
-  created() {
-    // Listen for auth changes
-    firebase.auth().onAuthStateChanged(async user => {
+    },
+    async handleAuthStateChanged(firebaseUser) {
       // Check if we have a user and if there is no user data in the store already
-      if (user && !this.$store.state.currentUser) {
+      if (firebaseUser && !this.currentUser) {
         // Get the uid of the user
-        const uid = user.uid;
+        const uid = firebaseUser.uid;
         // Fetch user details based on the uid of the logged in user
         const result = await firestoreDb
           .collection("users")
@@ -234,7 +242,15 @@ export default {
         // We have no user data, clear the store
         this.$store.commit("setUserData", null);
       }
-    });
+    }
+  },
+  computed: {
+    ...mapGetters(["currentUser", "darkTheme"]),
+    ...mapMutations(["setUserData", "toggleDarkTheme"])
+  },
+  created() {
+    // Listen for auth changes
+    firebase.auth().onAuthStateChanged(this.handleAuthStateChanged);
   }
 };
 </script>

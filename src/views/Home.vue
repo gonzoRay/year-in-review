@@ -1,13 +1,13 @@
 <template>
-  <Timeline/>
+  <Storyline/>
 </template>
 
 <script>
-import Timeline from "@/components/Timeline";
+import Storyline from "@/components/Storyline";
 
 export default {
   components: {
-    Timeline
+    Storyline
   }
 };
 </script>

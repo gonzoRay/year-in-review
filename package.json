@@ -1,5 +1,5 @@
 {
-  "name": "year-in-review",
+  "name": "storylines",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,9 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "deploy": "npm run build && cd dist/ && firebase deploy",
+    "deploy:ci": "npm run build && cd dist/ && firebase deploy --token $FIREBASE_TOKEN"
   },
   "dependencies": {
     "date-fns": "^1.30.1",

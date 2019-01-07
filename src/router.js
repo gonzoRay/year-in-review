@@ -52,9 +52,11 @@ const router = new Router({
   ]
 });
 
-router.beforeEach((to, from, next) => {
-  const currentUser = firebase.auth().currentUser;
+router.beforeEach(async (to, from, next) => {
+  const currentUser = await firebase.auth().currentUser;
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  // TODO: firebase.auth().currentUser is null when the page reloads
+  //        Need to wrap in a promise and not resolve until callback comes back.
   if (requiresAuth && !currentUser) {
     next("/login");
   } else {

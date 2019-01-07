@@ -8,12 +8,12 @@
       <v-stepper-content step="1">
         <v-layout column justify-space-between>
           <v-flex xs1 d-flex>
-            <div class="headline title-input">What would you like to add to the timeline?</div>
+            <div class="headline title-input">What would you like to add to your story line?</div>
           </v-flex>
           <v-flex xs1>
             <div class="title">
               <v-text-field
-                v-model="newEntry.title"
+                v-model="newEvent.title"
                 prepend-icon="title"
                 placeholder="What was it?"
                 required
@@ -58,14 +58,14 @@
             >
               <v-text-field
                 slot="activator"
-                v-model="newEntry.datetime"
+                v-model="newEvent.datetime"
                 label="Pick the date"
                 prepend-icon="event"
                 readonly
               ></v-text-field>
               <v-date-picker
                 ref="picker"
-                v-model="newEntry.datetime"
+                v-model="newEvent.datetime"
                 color="cyan"
                 no-title
                 :min="datePickerMin"
@@ -73,7 +73,7 @@
               >
                 <v-spacer></v-spacer>
                 <v-btn flat color="primary" @click="dateMenu = false">Cancel</v-btn>
-                <v-btn flat color="primary" @click="pickDate(newEntry.datetime)">OK</v-btn>
+                <v-btn flat color="primary" @click="pickDate(newEvent.datetime)">OK</v-btn>
               </v-date-picker>
             </v-menu>
           </v-flex>
@@ -102,7 +102,7 @@
           <v-flex xs1 md12 d-flex>
             <div class="action-button">
               <v-textarea
-                v-model="newEntry.comment"
+                v-model="newEvent.comment"
                 prepend-icon="notes"
                 placeholder="Any specific thoughts or details to add?"
                 required
@@ -146,15 +146,14 @@ export default {
   },
   methods: {
     gotoReviewEvent() {
-      this.updateEntry(this.newEntry);
+      this.$store.dispatch("UPDATE_EVENT", this.newEvent);
       this.$router.push("review");
     },
     pickDate(selectedValue) {
       this.$refs.dateMenu.save(selectedValue);
       this.currentStep = 3;
     },
-    ...mapGetters(["newEntry"]),
-    ...mapMutations(["updateEntry"])
+    ...mapGetters(["newEvent"])
   }
 };
 </script>

@@ -4,7 +4,7 @@
     <v-card-text>
       <div class="review-line">
         <div class="caption">Title</div>
-        <span class="headline">{{ newEntry.title }}</span>
+        <span class="headline">{{ newEvent.title }}</span>
       </div>
       <div class="review-line">
         <div class="caption">Date</div>
@@ -12,7 +12,7 @@
       </div>
       <div class="review-line">
         <div class="caption">Comment</div>
-        <span class="body-2">{{ newEntry.comment }}</span>
+        <span class="body-2">{{ newEvent.comment }}</span>
       </div>
     </v-card-text>
     <v-card-actions>
@@ -23,29 +23,28 @@
           @click="publishEvent()"
           outline
           large
-        >Publish</v-btn>
+        >Publish to Storyline</v-btn>
       </div>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "ReviewEvent",
   methods: {
     getMonthAsDate() {
-      return new Date(this.newEntry.datetime);
+      return new Date(this.newEvent.datetime);
     },
     publishEvent() {
-      this.createEvent(this.newEntry);
+      this.$store.dispatch("CREATE_EVENT");
       this.$router.replace("/");
-    },
-    ...mapActions(["createEvent"])
+    }
   },
   computed: {
-    ...mapGetters(["newEntry"])
+    ...mapGetters(["newEvent"])
   }
 };
 </script>
